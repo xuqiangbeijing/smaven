@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="sys">
+	<!--  *****************************user part begin*****************************  -->
+	<select id="checklogin" parameterClass="com.pojo.sys.Sys_user" resultClass="com.pojo.sys.Sys_user">
+		select * from sys_user t where t.username=#username# and t.password=#password#
+	</select>
+	
+	<select id="getMenusByUserID" parameterClass="java.lang.String" resultClass="com.pojo.sys.Sys_menu">
+		select * from sys_menu menu where menu.menu_id in(
+			select rolemenu.menu_Id from sys_role_menu rolemenu,sys_user_role roleuser
+       		where rolemenu.role_id=roleuser.role_id and roleuser.user_id=#user_id# and menu.menu_flag=1
+       	)
+	</select>
+	
+	<select id="getMenuById" parameterClass="java.lang.String" resultClass="com.pojo.sys.Sys_menu">
+		select * from sys_menu menu where menu.menu_id=#id# and menu.menu_flag=1
+	</select>
+	
+	<select id="getChildMenusByParentId" parameterClass="java.lang.String" resultClass="com.pojo.sys.Sys_menu">
+		select * from sys_menu menu where menu.menu_parent_id=#parentId# order by menu.menu_weight
+	</select>
+	
+	<select id="findUserByName" parameterClass="java.util.HashMap" resultClass="com.pojo.sys.Sys_user">
+		select * from sys_user t where 1=1 
+		<isNotEmpty prepend="AND" property="username">  
+             t.username like '%$username$%'
+        </isNotEmpty>  
+        order by t.username limit $start$,$len$
+	</select>
+	<select id="findUserByID" parameterClass="java.util.HashMap" resultClass="com.pojo.sys.Sys_user">
+		select * from sys_user t where user_id=#userid#
+	</select>
+	
+	<select id="getUserTotalNum" parameterClass="java.util.HashMap" resultClass="int">
+		select count(*) from sys_user t where 1=1 
+		<isNotEmpty prepend="AND" property="username">  
+             t.username like '%$username$%'
+        </isNotEmpty>  
+	</select>
+	
+	<insert id="insertUser" parameterClass="com.pojo.sys.Sys_user">
+	    insert into sys_user(user_id,username,password,phone,email,creatdate,flag,descmsg) 
+	    values (#user_id#,#username#,#password#,#phone#,#email#,#creatdate#,#flag#,#descmsg#)
+	</insert>
+	
+	<update id="updateUser" parameterClass="com.pojo.sys.Sys_user">
+	    update sys_user set
+	    username = #username#,
+	    password = #password#,
+	    phone = #phone#,
+	    email = #email#,
+	    creatdate = #creatdate#,
+	    flag = #flag#,
+	    descmsg = #descmsg#
+	    where user_id=#user_id#
+	</update>
+	
+	<delete id="deleteUser" parameterClass="com.pojo.sys.Sys_user">
+	   delete from sys_user where user_id=#user_id#
+	</delete>
+	
+	<delete id="deleteRoleUser" parameterClass="com.pojo.sys.Sys_user">
+	   delete from sys_user_role where user_id=#user_id# 
+	</delete>
+	
+	<select id="getUserRolesByUserID" parameterClass="java.util.HashMap" resultClass="com.pojo.sys.Sys_role">
+		select * from sys_role where role_id in(
+           select role_id from sys_user_role rs where rs.user_id=#userID#
+        )
+	</select>
+	
+	<insert id="insertUserRole" parameterClass="com.pojo.sys.Sys_user_role">
+	    insert into sys_user_role (user_id,role_id) 
+	    values(#user_id#,#role_id#)
+	</insert>
+	<!--  *****************************user part end*****************************  -->
+	
+	<!--  *****************************role part begin*****************************  -->
+	<select id="findRoleByName" parameterClass="java.util.HashMap" resultClass="com.pojo.sys.Sys_role">
+		select * from sys_role t where 1=1 
+		<isNotEmpty prepend="AND" property="rolename">  
+             t.role_name like '%$rolename$%'
+        </isNotEmpty>  
+        order by t.role_name limit $start$,$len$
+	</select>
+	<select id="findRoleByID" parameterClass="java.util.HashMap" resultClass="com.pojo.sys.Sys_role">
+		select * from sys_role t where role_id=#roleid#
+	</select>
+	
+	<select id="getAllRole" resultClass="com.pojo.sys.Sys_role">
+		select * from sys_role
+	</select>
+	<select id="getRoleTotalNum" parameterClass="java.util.HashMap" resultClass="int">
+		select count(*) from sys_role t where 1=1 
+		<isNotEmpty prepend="AND" property="rolename">  
+             t.role_name like '%$rolename$%'
+        </isNotEmpty>  
+	</select>
+	
+	<insert id="insertRole" parameterClass="com.pojo.sys.Sys_role">
+	    insert into sys_role(role_id,role_name,role_desc) 
+	    values (#role_id#,#role_name#,#role_desc#)
+	</insert>
+	
+	<update id="updateRole" parameterClass="com.pojo.sys.Sys_role">
+	    update sys_role set
+	    role_name = #role_name#,
+	    role_desc = #role_desc#
+	    where role_id=#role_id#
+	</update>
+	
+	<delete id="deleteRole" parameterClass="com.pojo.sys.Sys_role">
+	   delete from sys_role where role_id=#role_id#
+	</delete>
+	
+	<delete id="deleteRoleUser_byrole" parameterClass="com.pojo.sys.Sys_role">
+	   delete from sys_user_role where role_id=#role_id# 
+	</delete>
+	
+	<delete id="deleteRoleMenu" parameterClass="com.pojo.sys.Sys_role">
+	   delete from sys_role_menu where role_id=#role_id# 
+	</delete>
+	
+	<!--  *****************************role part end*****************************  -->
+</sqlMap>
