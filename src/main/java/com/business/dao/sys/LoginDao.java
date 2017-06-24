@@ -22,6 +22,7 @@ public class LoginDao{
    public Sys_user findUserByNameAndPass(Sys_user user) throws SQLException {
       String pass=user.getPassword();
       MD5 md5=new MD5();
+      
       user.setPassword(md5.getMD5ofStr(pass));
       return (Sys_user)dao.getObject("sys.checklogin", user);
    }
