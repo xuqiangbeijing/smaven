@@ -18,7 +18,7 @@ import com.pojo.sys.Sys_user;
 public class LoginDao{
    @Autowired
    private BaseDao dao;
-   
+
    public Sys_user findUserByNameAndPass(Sys_user user) throws SQLException {
       String pass=user.getPassword();
       MD5 md5=new MD5();
